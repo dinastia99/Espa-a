@@ -300,6 +300,27 @@ input[type="text"]:focus{outline:none;border-color:var(--accent)}
         <div class="card"><div class="card-title">Jornadas cargadas</div><div id="loadedJornadasStatus"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap"><span style="font-size:13px;font-weight:600;color:var(--accent)">7 jornadas cargadas</span><span style="font-size:12px;color:var(--muted)">35 partidos</span><span style="font-size:11px;color:var(--green2)">✓ BDUAR</span><button class="btn btn-sm" style="margin-left:auto;color:var(--red2);border-color:var(--red2)" onclick="clearTournamentData()">✕ Resetear</button></div><div style="display:flex;flex-wrap:wrap;gap:6px"><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px"><span style="font-weight:700;color:var(--accent)">F01</span><span style="color:var(--muted);margin-left:6px">5P · 24T</span></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px"><span style="font-weight:700;color:var(--accent)">F02</span><span style="color:var(--muted);margin-left:6px">5P · 16T</span></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px"><span style="font-weight:700;color:var(--accent)">F03</span><span style="color:var(--muted);margin-left:6px">5P · 25T</span></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px"><span style="font-weight:700;color:var(--accent)">F04</span><span style="color:var(--muted);margin-left:6px">5P · 38T</span></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px"><span style="font-weight:700;color:var(--accent)">F05</span><span style="color:var(--muted);margin-left:6px">5P · 23T</span></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px"><span style="font-weight:700;color:var(--accent)">F06</span><span style="color:var(--muted);margin-left:6px">5P · 30T</span></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:12px"><span style="font-weight:700;color:var(--accent)">F07</span><span style="color:var(--muted);margin-left:6px">5P · 40T</span></div></div><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><button class="btn" style="background:var(--accent);color:#fff;border-color:var(--accent)" onclick="exportarParaEntrenadores()">⬇ Exportar para entrenadores</button><button class="btn" style="background:var(--green2,#22c55e);color:#fff;border-color:var(--green2,#22c55e)" onclick="exportarConDatos()">📤 Compartir con datos</button></div><div style="margin-top:8px;font-size:11px;color:var(--dim)">Importá otro archivo para agregar más jornadas. <b>Exportar para entrenadores</b>: versión reducida para cuerpo técnico. <b>Compartir con datos</b>: app completa con los datos incrustados — mandás un solo archivo, sin necesitar el Excel.</div></div></div>
       </div>
 
+      <!-- GITHUB AUTO-SYNC -->
+      <div class="card" style="border-color:rgba(35,197,94,0.35);margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+          <div style="width:36px;height:36px;background:rgba(35,197,94,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px">🐙</div>
+          <div>
+            <div style="font-size:14px;font-weight:500">Excel en GitHub <span style="font-size:11px;color:var(--green2);font-weight:600">RECOMENDADO</span></div>
+            <div style="font-size:11px;color:var(--muted)">Pegá el link raw de tu archivo Excel en GitHub — se carga automáticamente al abrir la app</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input type="text" id="githubExcelUrl" placeholder="https://raw.githubusercontent.com/usuario/repo/main/archivo.xlsx" style="flex:1;font-size:12px">
+          <button class="btn btn-sm" style="background:var(--green2,#22c55e);color:#0d1117;border-color:var(--green2,#22c55e);white-space:nowrap" onclick="saveGithubUrl()">💾 Guardar</button>
+          <button class="btn btn-sm" style="white-space:nowrap" onclick="syncGithubNow()">↺ Sincronizar</button>
+        </div>
+        <div id="githubSyncStatus" style="font-size:12px;color:var(--muted)"></div>
+        <div style="margin-top:6px;font-size:11px;color:var(--dim)">
+          📌 URL de ejemplo: <code style="font-size:10px;color:var(--accent)">https://raw.githubusercontent.com/dinastia99/Espa-a/main/consolidado.xlsx</code><br>
+          Subí el Excel a tu repo de GitHub → copiá el link del botón "Raw" → pegalo acá y guardá. Cada vez que actualices el Excel en GitHub, cualquier persona que abra esta página verá los datos nuevos automáticamente.
+        </div>
+      </div>
+
       <!-- CARPETA DRIVE -->
       <div class="card" style="border-color:rgba(56,139,253,0.3);margin-bottom:14px">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
@@ -419,6 +440,7 @@ input[type="text"]:focus{outline:none;border-color:var(--accent)}
 // --- STATE -------------------------------------------------------------------
 const STORAGE_KEY = 'rugby_local_state';
 const STORAGE_VERSION = '20260821';
+const GITHUB_EXCEL_KEY = 'rugby_github_excel_url';
 try {
   if(localStorage.getItem('rugby_local_sv') !== STORAGE_VERSION) {
     localStorage.removeItem(STORAGE_KEY);
@@ -3432,6 +3454,7 @@ function exportarParaEntrenadores() {
   showToast('✓ HTML exportado con ' + (t.allJornadas||[]).length + ' jornadas', 'success');
 }
 function renderCargar(){
+  setTimeout(initGithubUrlInput, 50); // restore saved GitHub URL in input
   const t=getActiveTournament();
   const status=document.getElementById('loadedJornadasStatus');
   if(!t||!t.allJornadas||!t.allJornadas.length){
@@ -4453,7 +4476,18 @@ document.addEventListener('drop',function(e){e.preventDefault();var f=e.dataTran
 
 // --- INIT ---------------------------------------------------------------------
 loadState(); updateSidebar(); renderPage('resumen');
-// Local version: no auto-load from GitHub
+// Auto-fetch from GitHub if a URL is configured
+(function autoFetchGitHub() {
+  try {
+    var ghUrl = localStorage.getItem(GITHUB_EXCEL_KEY);
+    if(ghUrl) {
+      fetchFromGitHubURL(ghUrl, true); // silent=true: no toast on startup
+    }
+  } catch(e) {}
+})();
+// Initialize GitHub URL input with saved value
+setTimeout(initGithubUrlInput, 100);
+// Local version: no auto-load from GitHub (legacy line kept)
 function autoLoadXLSX() { triggerFilePicker(); }
 function triggerFilePicker() { document.getElementById('xlsxPickerGlobal').click(); }
 function handleConsolidadoPick(input) {
@@ -4461,6 +4495,85 @@ function handleConsolidadoPick(input) {
   input.value=''; // reset so same file can be reloaded
   readConsolidado(file);
 }
+// --- GITHUB AUTO-FETCH -------------------------------------------------------
+function fetchFromGitHubURL(url, silent) {
+  var statusEl = document.getElementById('githubSyncStatus');
+  if(statusEl) statusEl.innerHTML = '<span style="color:var(--accent)">⏳ Descargando desde GitHub...</span>';
+  var cacheBuster = '?_=' + Date.now();
+  fetch(url + cacheBuster)
+    .then(function(r) {
+      if(!r.ok) throw new Error('HTTP ' + r.status + ' — verificá que el link sea correcto y el repo sea público');
+      return r.arrayBuffer();
+    })
+    .then(function(ab) {
+      try {
+        var bytes = new Uint8Array(ab);
+        var parsed = parseTournamentXLSX(bytes);
+        if(!parsed || !parsed.allJornadas || !parsed.allJornadas.length) throw new Error('No se encontraron jornadas en el archivo');
+        // derive tournament name from URL filename
+        var fname = url.split('/').pop().split('?')[0];
+        var tornName = fname.replace(/\.xlsx?$/i,'').replace(/_/g,' ').replace(/LGM/i,'').trim() || 'GitHub';
+        var id = tornName.toLowerCase().replace(/[^a-z0-9]/g,'_');
+        PRIMERA_TEAMS.clear();
+        if(parsed.allTeams) parsed.allTeams.forEach(function(t){PRIMERA_TEAMS.add(t);});
+        if(!state.tournaments) state.tournaments = {};
+        state.tournaments[id] = Object.assign({id:id, name:tornName}, parsed);
+        state.activeTournament = id;
+        saveState(); updateSidebar();
+        renderPage(state.currentPage || 'resumen');
+        var msg = '✓ ' + parsed.allJornadas.length + ' jornadas cargadas desde GitHub · ' + tornName;
+        if(!silent) showToast(msg, 'success');
+        if(statusEl) statusEl.innerHTML = '<span style="color:var(--green2,#22c55e)">' + msg + '</span>';
+        // persist last sync time
+        try { localStorage.setItem('rugby_github_last_sync', new Date().toLocaleString('es-AR')); } catch(e) {}
+      } catch(err) {
+        if(!silent) showToast('Error al procesar: ' + err.message, 'error');
+        if(statusEl) statusEl.innerHTML = '<span style="color:var(--red2,#f85149)">✗ ' + err.message + '</span>';
+      }
+    })
+    .catch(function(err) {
+      var msg = err.message || 'Error de red';
+      if(!silent) showToast('No se pudo descargar: ' + msg, 'error');
+      if(statusEl) statusEl.innerHTML = '<span style="color:var(--red2,#f85149)">✗ ' + msg + '</span>';
+    });
+}
+
+function saveGithubUrl() {
+  var input = document.getElementById('githubExcelUrl');
+  var url = (input ? input.value : '').trim();
+  if(!url) { showToast('Ingresá una URL', 'error'); return; }
+  // Normalize: convert github.com blob URL to raw URL if needed
+  url = url.replace('github.com','raw.githubusercontent.com').replace('/blob/','\/');
+  try { localStorage.setItem(GITHUB_EXCEL_KEY, url); } catch(e) {}
+  if(input) input.value = url;
+  var statusEl = document.getElementById('githubSyncStatus');
+  if(statusEl) statusEl.innerHTML = '<span style="color:var(--accent)">URL guardada. Sincronizando...</span>';
+  fetchFromGitHubURL(url, false);
+}
+
+function syncGithubNow() {
+  var url;
+  try { url = localStorage.getItem(GITHUB_EXCEL_KEY); } catch(e) {}
+  var input = document.getElementById('githubExcelUrl');
+  if(input && input.value.trim()) url = input.value.trim();
+  if(!url) { showToast('Primero guardá una URL de GitHub', 'error'); return; }
+  fetchFromGitHubURL(url, false);
+}
+
+function initGithubUrlInput() {
+  var input = document.getElementById('githubExcelUrl');
+  if(!input) return;
+  try {
+    var saved = localStorage.getItem(GITHUB_EXCEL_KEY);
+    if(saved) {
+      input.value = saved;
+      var last = localStorage.getItem('rugby_github_last_sync');
+      var statusEl = document.getElementById('githubSyncStatus');
+      if(statusEl && last) statusEl.innerHTML = '<span style="color:var(--dim)">Última sincronización: ' + last + '</span>';
+    }
+  } catch(e) {}
+}
+
 function readConsolidado(file) {
   var tornName=file.name.replace(/\.xlsx?$/i,'').replace(/_/g,' ').replace(/LGM/i,'').trim();
   if(!tornName) tornName='Análisis';
